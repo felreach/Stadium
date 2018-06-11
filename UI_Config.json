@@ -1,0 +1,253 @@
+﻿{
+  "output_file": "TournamentConfig.json",
+
+  "OnlyWhenLive": {
+    "type": "checkbox",
+    "value": false,
+    "label": "Only when live",
+    "tooltip": "Allows trainers to enter the tournament only when the stream is live.",
+    "group": "General"
+  },
+  "Command": {
+    "type": "textbox",
+    "value": "!stadium",
+    "label": "Command",
+    "tooltip": "Name of the Command",
+    "group": "General"
+  },
+  "Permission": {
+    "type": "dropdown",
+    "value": "Everyone",
+    "items": [ "Everyone", "Regular", "Subscriber", "Moderator" ],
+    "label": "Permission level",
+    "tooltip": "Set the permission level for the command",
+    "group": "General"
+  },
+  "ManagerPermission": {
+    "type": "dropdown",
+    "value": "Moderator",
+    "items": [ "Everyone", "Regular", "Subscriber", "Moderator" ],
+    "label": "Management Permission level",
+    "tooltip": "Set the permission level necessary for management of the tournament",
+    "group": "General"
+  },
+  "AllowRegularsToManage": {
+    "type": "checkbox",
+    "value": false,
+    "label": "Can Regular Viewers Manage?",
+    "tooltip": "Grants permission to Regulars to manage the tournament.",
+    "group": "General"
+  },
+  "EntryCost": {
+    "type": "numberbox",
+    "value": "0",
+    "label": "Cost to enter the tournament",
+    "tooltip": "Set the cost for entering the tournament. \r\nYou might need to set the entry cost to zero when using external currency, because this script can subtract the cost only from bot's internal currency.",
+    "group": "Entry"
+  },
+  "UseCommonResponses": {
+    "type": "checkbox",
+    "value": true,
+    "label": "Use Response Messages",
+    "tooltip": "Enable/Disable all the common response messages for the trainers",
+    "group": "Responses"
+  },
+  "EnableInvalidTypeResponse": {
+    "type": "checkbox",
+    "value": true,
+    "label": "Use Invalid Type Response",
+    "tooltip": "Enable/Disable notifying the user about using an invalid type for entering the tournament.",
+    "group": "Responses"
+  },
+  "EnableEntryResponse": {
+    "type": "checkbox",
+    "value": true,
+    "label": "Use Tournament Entry Messages ",
+    "tooltip": "Enable/Disable messages when entering the tournament",
+    "group": "Responses"
+  },
+  "EnableEntryCostResponse": {
+    "type": "checkbox",
+    "value": true,
+    "label": "Use Tournament Entry Cost Messages ",
+    "tooltip": "Enable/Disable messages relating to entrance cost when entering the tournament",
+    "group": "Responses"
+  },
+  "EnablePayout": {
+    "type": "checkbox",
+    "value": false,
+    "label": "Allow Payout",
+    "tooltip": "Enable/Disable paying out the winner",
+    "group": "Winnings"
+  },
+  "PrizePerBattle": {
+    "type": "numberbox",
+    "value": "5",
+    "label": "Winnings per battle",
+    "tooltip": "Winnings gained by winning a battle. Only payed out if the Trainer wins.",
+    "group": "Winnings"
+  },
+  "FinalPrizePerTrainer": {
+    "type": "numberbox",
+    "value": "5",
+    "label": "Prize per entered trainer",
+    "tooltip": "Bonus winnings which scale together with number of Trainers which entered the tournament.",
+    "group": "Winnings"
+  },
+  "FinalPrize": {
+    "type": "numberbox",
+    "value": "200",
+    "label": "Final Prize",
+    "tooltip": "Amount given for winning the tournament.",
+    "group": "Winnings"
+  },
+  "CurrencyName": {
+    "type": "textbox",
+    "value": "of Chat Currency",
+    "label": "Currency Name (for payout msg)",
+    "tooltip": "Name of the currency to display when paying out the winner. \r\nUse plural.\r\nPayout message looks like: ...Their winnings are XXX [entered text]!",
+    "group": "Winnings"
+  },
+  "UseExternalPayout": {
+    "type": "checkbox",
+    "value": false,
+    "label": "Use External Payout",
+    "tooltip": "Enable/Disable paying out the winner with external currency.",
+    "group": "Winnings"
+  },
+  "ExternalPayoutCommand": {
+    "type": "textbox",
+    "value": "!addpoints $user $amount",
+    "label": "Payout Command",
+    "tooltip": "Command used for paying out the winner of the tournament when external currency is used. \r\n$user = winner's nickname \r\n$amount = amount to add \r\nBot/User running this script needs to have sufficient permission to use the command.",
+    "group": "Winnings"
+  },
+
+
+  "UtilityCooldown": {
+    "type": "numberbox",
+    "label": "Utility Cooldown (seconds)",
+    "value": 5,
+    "tooltip": "Cooldown for utility and management commands(in seconds).",
+    "group": "Cooldown"
+  },
+  "TypeIneffectiveValue": {
+    "type": "numberbox",
+    "label": "Strength value when ineffective",
+    "value": 20,
+    "tooltip": "Strength value given to the type when its fighting a type which it is ineffective against. ",
+    "group": "Types"
+  },
+  "TypeWeakValue": {
+    "type": "numberbox",
+    "label": "Strength value when not very effective",
+    "value": 40,
+    "tooltip": "Strength value given to the type when its fighting a type which it is not very effective against. ",
+    "group": "Types"
+  },
+  "TypeEvenValue": {
+    "type": "numberbox",
+    "label": "Strength value when even",
+    "value": 50,
+    "tooltip": "Strength value given to the type when its fighting a type which it is even against. ",
+    "group": "Types"
+  },
+  "TypeStrongValue": {
+    "type": "numberbox",
+    "label": "Strength value when super effective",
+    "value": 70,
+    "tooltip": "Strength value given to the type when its fighting a type which it is super effective against. ",
+    "group": "Types"
+  },
+  "ResultAnnoucementStyle": {
+    "type": "dropdown",
+    "value": "Loosers",
+    "items": [ "Winners", "Loosers", "Both" ],
+    "label": "Result Annoucement Style",
+    "tooltip": "Changes how the battle results are announced (excludes final battles. \r\nWinners: only winners are announced in chat. \r\nLoosers: only loosers are announced.\r\nBoth: both loosers and winners are announced.",
+    "group": "Responses"
+  },
+  "PrefaceMessages": {
+    "type": "checkbox",
+    "value": false,
+    "label": "Preface messages?",
+    "tooltip": "Enable/disable prefacing response messages with [Stadium:]",
+    "group": "Responses"
+  },
+  
+  "StadiumStartsLocked": {
+    "type": "checkbox",
+    "value": false,
+    "label": "Stadium starts locked?",
+    "tooltip": "Stadium needs to be unlocked by a manager before it can be used. \r\nOpen the Stadium with !command prepare/readyup",
+    "group": "Tournament"
+  },
+  "TournamentSignUpPeriod": {
+    "type": "numberbox",
+    "value": "60",
+    "label": "Sign up window",
+    "tooltip": "How long it takes since the first participant has entered to lock the tournament (in seconds)",
+    "group": "Tournament"
+  },
+  "AdvancementStyle": {
+    "type": "dropdown",
+    "value": "PerRound",
+    "items": [ "PerRound", "PerBattle" ],
+    "label": "Advacement Style",
+    "tooltip": "Changes how the tournament progresses. \r\nPerRound: all battles of the current round are resolved at once (less responses in the chat). \r\nPerBattle: battles are slowly resolved one by one (more responses in the chat).",
+    "group": "Tournament"
+  },
+  "BattleStyle": {
+    "type": "dropdown",
+    "value": "Long",
+    "items": [ "Long", "Short" ],
+    "label": "Battle Style",
+    "tooltip": "Changes how the battles progress. \r\nLong: battles can progress slowly (more messages in chat). \r\nShort: battles resolve instanly (very little messages).",
+    "group": "Tournament"
+  },
+  "FinalsStyle": {
+    "type": "dropdown",
+    "value": "Long",
+    "items": [ "Long", "Short" ],
+    "label": "Finals Style",
+    "tooltip": "Changes how the finals progress. \r\nLong: finals progress slowly (more messages in chat). \r\nShort: finals are resolved instantly.",
+    "group": "Tournament"
+  },
+  "PauseBetweenRounds": {
+    "type": "numberbox",
+    "value": "20",
+    "label": "Pause between rounds",
+    "tooltip": "How long the pause is between each of the tournament rounds, zero means the tournament will resolve quickly (in seconds). \r\nIf the tournament takes too long to resolve, try settings this to low value if you are using Long advancement style and Long battle style.",
+    "group": "Tournament"
+  },
+  "PauseBetweenFinalRounds": {
+    "type": "numberbox",
+    "value": "15",
+    "label": "Pause between finals messages",
+    "tooltip": "How long the pause is between each of the notifications about finals progression, zero means the finals will resolve quickly.",
+    "group": "Tournament"
+  },
+  "TournamentPreparationTime": {
+    "type": "numberbox",
+    "value": "120",
+    "label": "Pause between Tournaments",
+    "tooltip": "How long it takes to prepare a new tournament after one finishes (in seconds)",
+    "group": "Tournament"
+  },
+  "BackdoorForFel": {
+    "type": "checkbox",
+    "value": true,
+    "label": "Backdoor for Fel opened?",
+    "tooltip": "Allows Felreach(script author) to use stadium backdoor. \r\nHe can then run debug and status commands for checking how the tournament is going.",
+    "group": "Tournament"
+  },
+
+  "OpenReadMe": {
+    "type": "button",
+    "label": "Open Readme.txt",
+    "tooltip": "Opens the 'Readme.txt' for this script.",
+    "function": "OpenReadMe",
+    "wsevent": "",
+    "group": ""
+  }
+}
