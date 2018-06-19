@@ -10,6 +10,8 @@ import ctypes
 import threading
 import time
 import codecs
+from datetime import datetime
+from datetime import timedelta
 
 #---------------------------------------
 #	[Required]	Script Information
@@ -19,7 +21,7 @@ ScriptName = "Tournament - Pokemon"
 Website = "https://twitter.com/Felreach"
 Description = "Tournament - Pokemon"
 Creator = "Felreach"
-Version = "1.0.0"
+Version = "1.0.1"
 
 #---------------------------------------
 #	Classes
@@ -82,6 +84,8 @@ currentProgressionDepth = -1
 startBracket = []
 currentTick = ""
 
+#announcement
+lastAnnouncementTime = datetime.now()
 
 #command params
 cmdParamListTypes = {"types", "listtypes"}
@@ -94,10 +98,10 @@ TYPES = ["normal", "fighting", "flying", "poison", "ground", "rock", "bug", "gho
 INEFFECTIVE_AGAINST = { "normal" : {"ghost"}, "fighting" : {"ghost"}, "poison" : {"steel"}, "ground" : {"flying"}, "ghost" : {"normal"}, "electric" : {"ground"}, "psychic" : {"dark"}, "dragon" : {"fairy"}}
 WEAK_AGAINST = { "normal" : {"rock", "steel"}, "fighting" : {"flying", "poison", "bug", "psychic", "fairy"}, "flying": {"rock", "steel", "electric"}, "poison" : {"poison", "ground", "rock", "ghost"}, "ground" : {"bug", "grass"}, "rock" : {"fighting", "ground", "steel"}, "bug": {"fighting", "flying", "poison", "ghost", "steel", "fire", "fairy"}, "ghost" : {"dark"}, "steel" : {"steel", "fire", "water", "electric"}, "fire" : {"rock", "fire", "water", "dragon"}, "water" : {"water", "grass", "dragon"}, "grass" : {"flying", "poison", "bug", "steel", "fire", "grass", "dragon"}, "electric" : {"grass", "electric", "dragon"}, "psychic" : {"steel", "psychic"}, "ice" : {"steel", "fire", "water", "ice"}, "dragon" : {"steel"}, "dark" : {"fighting", "dark", "fairy"}, "fairy" : {"poison", "steel", "fire"}}
 STRONG_AGAINST = { "fighting" : {"normal", "rock", "steel", "ice", "dark"}, "flying" : {"fighting", "bug", "grass"}, "poison": {"grass"}, "ground" : {"poison", "rock", "steel", "fire", "electric"}, "rock" : {"flying", "bug", "fire", "ice"}, "bug" :{"grass", "psychic", "dark"}, "ghost" : {"ghost", "psychic"}, "steel" : {"rock", "ice", "fairy"}, "fire" : {"bug", "steel", "grass", "ice"}, "water": {"ground", "rock", "fire"}, "grass" : {"ground", "rock", "water"}, "electric" : {"flying", "water"}, "psychic" : {"fighting", "poison"}, "ice" : {"flying", "ground", "grass", "dragon"}, "dragon" : {"dragon"}, "dark" : {"ghost", "psychic"}, "fairy" : {"fighting", "dragon", "dark"}}
-ineffectiveStrength = 10.0
-weakStrength = 25.0
+ineffectiveStrength = 20.0
+weakStrength = 40.0
 evenStrength = 50.0
-strongStrength = 75.0
+strongStrength = 70.0
 
 
 #threads
@@ -203,7 +207,7 @@ def Battle(first, second):
 			strength1 = GetStrengthValue(first, second)
 			strength2 = GetStrengthValue(second, first)
 			toWin = strength1 / (strength1 + strength2)
-			if( RandomInstance.random() < toWin):
+			if( RandomInstance.random() < toWin ):
 				result["winner"] = "first"
 			else :
 				result["winner"] = "second"
@@ -584,9 +588,10 @@ def finishTournament():
 	return
 
 def cooldownTournament():
-	global currentTick, tournamentOpened, tournamentReady, tournamentStarted
+	global currentTick, tournamentOpened, tournamentReady, tournamentStarted, lastAnnouncementTime
 
 	currentTick = "Cooldown"
+	lastAnnouncementTime = datetime.now()
 
 	return
 
@@ -596,6 +601,7 @@ def resetTournament(unlock = False):
 	global enteredTrainers, allTrainers, currentBracket, startBracket, currentProgressionDepth, tournamentDepth, allMatches
 
 	global entranceLockTimerThreadActive, startPauseTimerThreadActive, tournamentTimerThreadActive, cooldownTimerThreadActive
+	global lastAnnouncementTime
 
 	currentTick = ""
 	tournamentReady = True
@@ -618,6 +624,8 @@ def resetTournament(unlock = False):
 	startPauseTimerThreadActive = False
 	tournamentTimerThreadActive = False
 	cooldownTimerThreadActive = False
+
+	lastAnnouncementTime = datetime.now()
 
 	return
 
@@ -662,15 +670,22 @@ def getTournamentStatus():
 
 def ScriptToggled(state):
 	global threadsKeepAlive
+
+	Debug("ScriptToggled: " + str(state))
 	# if enabled again tell the script to keep the threads running again
 	if state:
 		threadsKeepAlive = True
-	# if the script gets disabled, stop all timers and resets the textfiles
-	else:
+
+		s = "Stadium script enabled."
+		if stadiumLocked:
+			s += " Stadium is locked, when it unlocks use " + settings["Command"] + " <pokemon type> to enter."
+		else:
+			s += " Try entering the tournament using " + settings["Command"] + " <pokemon type>"
+		Parent.SendTwitchMessage(s)
+
+	else: # if the script gets disabled, stop all timers and resets the textfiles
 		resetTournament()
 		
-		ResetUptime()
-		timerData["twitchApiResponseOffline"] = 0
 		Unload()
 	return
 
@@ -718,6 +733,9 @@ def Init():
 			"EnableInvalidTypeResponse" : True,
 			"EnableEntryResponse" : True,
 			"EnableEntryCostResponse" : True,
+			"EnablePeriodicAnnouncement" : True, 
+			"PeriodicAnnouncementEvenWhenLocked" : True,
+			"PeriodicAnnouncementPeriod" : 300,
 			"EnablePayout" : False,
 			"PrizePerBattle": 5,
 			"FinalPrizePerTrainer": 5,
@@ -730,7 +748,7 @@ def Init():
 			"TypeWeakValue" : 40,
 			"TypeEvenValue" : 50,
 			"TypeStrongValue" : 70,
-			"ResultAnnoucementStyle" : "Loosers",
+			"ResultAnnoucementStyle" : "Both",
 			"PrefaceMessages" : False,
 			"OnCooldownResponse": "$user, the command is still on cooldown for $cd seconds!",
 			"OnUserCooldownResponse": "$user the command is still on user cooldown for $cd seconds!",
@@ -738,7 +756,7 @@ def Init():
 			"AdvancementStyle" : "PerRound",
 			"BattleStyle": "Long",
 			"FinalsStyle": "Long",
-			"TournamentSignUpPeriod" : 120,
+			"TournamentSignUpPeriod" : 150,
 			"PauseBetweenRounds" : 20,
 			"PauseBetweenFinalRounds" : 15,
 			"TournamentPreparationTime" : 120,
@@ -752,6 +770,7 @@ def Init():
 	evenStrength = settings["TypeEvenValue"]
 	strongStrength = settings["TypeStrongValue"]
 
+	Debug("Init()")
 
 	return
 
@@ -790,7 +809,7 @@ def Execute(data):
 			if(data.GetParam(1).lower() in cmdParamReadyTourny and hasManagePermission):
 				if stadiumLocked:
 					resetTournament(True)
-					tempResponseString = "Stadium has been unlocked and is ready for next tournament! Sign up with " + settings["Command"] + " [type]!"
+					tempResponseString = "Stadium has been unlocked and is ready for next tournament! Sign up with " + settings["Command"] + " <pokemon type>"
 				else:
 					if not tournamentReady and not tournamentOpened and not tournamentStarted:
 						resetTournament(True)
@@ -924,8 +943,11 @@ def Execute(data):
 						if not tournamentStarted:
 							if user not in enteredTrainers:
 								type = data.GetParam(1).lower()
-								if type in TYPES:
+								if type in TYPES or type == "random":
 									if entryprice <= Parent.GetPoints(data.User): # use param for the price
+										if type == "random":
+											type = RandomInstance.choice(TYPES)
+
 										enteredTrainers.append(user)
 										allTrainers.append(Fighter(user, type, 0))
 
@@ -1013,6 +1035,8 @@ def ReloadSettings(jsonData):
 
 	Init()
 
+	s = "Stadium settings reloaded."
+	Parent.SendTwitchMessage(s)
 
 	return
 
@@ -1026,9 +1050,28 @@ def OpenReadMe():
 #---------------------------------------
 def Tick():
 	global currentTick, tickCounter, RandomInstance
+	global lastAnnouncementTime
 
 	if tickCounter % 100 == 0:
 		Debug("Tick:" + currentTick)
+
+		# try announce tournament ready
+		if settings["EnablePeriodicAnnouncement"] and settings["PeriodicAnnouncementPeriod"] > 0:
+			if not tournamentStarted and not tournamentOpened and currentTick != "Cooldown" and tournamentReady:
+				s = ""
+				# compare last announcement time
+				delta = datetime.now() - lastAnnouncementTime
+				Debug("trying to announce:" + str(delta.total_seconds()) + "stadiumlocked:" + str(stadiumLocked))
+				if delta.total_seconds() >= settings["PeriodicAnnouncementPeriod"]:
+					if stadiumLocked:
+						if settings["PeriodicAnnouncementEvenWhenLocked"]:
+							s = "Stadium is locked, when it unlocks use " + settings["Command"] + " <pokemon type> to enter."
+					else:
+						s = "Stadium is open! Enter the tournament using " + settings["Command"] + " <pokemon type>."
+					lastAnnouncementTime = datetime.now()
+				
+				SendMsg(s);
+
 	tickCounter += 1
 
 	if tournamentOpened and not tournamentStarted:
@@ -1201,7 +1244,13 @@ def Tick():
 				winnings += settings["FinalPrize"]
 
 				#announce winners
-				s = "The tournament is over, @$winner wins with $type Pokemon. The Badge is theirs. Their winnings are $amount $currency!"
+				s = "The tournament is over, @$winner wins with $type Pokemon. The Badge is theirs."
+				if winnings > 0:
+					if settings["EnablePayout"] == True:
+						s += " Their winnings are $amount $currency!"
+					else:
+						s += " They should be paid out $amount $currency!"
+
 				s = s.replace("$winner", allTrainers[battle.winner].name)
 				s = s.replace("$type", str(allTrainers[battle.winner].deckType).capitalize())
 				s = s.replace("$amount", str(winnings))

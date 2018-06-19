@@ -102,3 +102,7 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# settings files for the script
+TournamentConfig.js
+TournamentConfig.json

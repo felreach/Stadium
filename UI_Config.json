@@ -50,28 +50,49 @@
     "value": true,
     "label": "Use Response Messages",
     "tooltip": "Enable/Disable all the common response messages for the trainers",
-    "group": "Responses"
+    "group": "Messages"
   },
   "EnableInvalidTypeResponse": {
     "type": "checkbox",
     "value": true,
     "label": "Use Invalid Type Response",
     "tooltip": "Enable/Disable notifying the user about using an invalid type for entering the tournament.",
-    "group": "Responses"
+    "group": "Messages"
   },
   "EnableEntryResponse": {
     "type": "checkbox",
     "value": true,
     "label": "Use Tournament Entry Messages ",
     "tooltip": "Enable/Disable messages when entering the tournament",
-    "group": "Responses"
+    "group": "Messages"
   },
   "EnableEntryCostResponse": {
     "type": "checkbox",
     "value": true,
     "label": "Use Tournament Entry Cost Messages ",
     "tooltip": "Enable/Disable messages relating to entrance cost when entering the tournament",
-    "group": "Responses"
+    "group": "Messages"
+  },
+  "EnablePeriodicAnnouncement": {
+    "type": "checkbox",
+    "value": true,
+    "label": "Use Tournament Entry Cost Messages",
+    "tooltip": "Enable/Disable periodic message that the tournament is ready",
+    "group": "Messages"
+  },
+  "PeriodicAnnouncementEvenWhenLocked": {
+    "type": "checkbox",
+    "value": true,
+    "label": "Periodic Announcement Even When Locked",
+    "tooltip": "The periodic announcement is send to chat even when the tournament is locked.",
+    "group": "Messages"
+  },
+  "PeriodicAnnouncementPeriod": {
+    "type": "numberbox",
+    "value": "300",
+    "label": "Period between Announcements",
+    "tooltip": "Time between announcements. (in seconds)",
+    "group": "Messages"
   },
   "EnablePayout": {
     "type": "checkbox",
@@ -174,7 +195,7 @@
     "tooltip": "Enable/disable prefacing response messages with [Stadium:]",
     "group": "Responses"
   },
-  
+
   "StadiumStartsLocked": {
     "type": "checkbox",
     "value": false,
@@ -184,7 +205,7 @@
   },
   "TournamentSignUpPeriod": {
     "type": "numberbox",
-    "value": "60",
+    "value": "150",
     "label": "Sign up window",
     "tooltip": "How long it takes since the first participant has entered to lock the tournament (in seconds)",
     "group": "Tournament"
