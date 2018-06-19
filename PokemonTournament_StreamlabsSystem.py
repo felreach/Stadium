@@ -21,7 +21,7 @@ ScriptName = "Tournament - Pokemon"
 Website = "https://twitter.com/Felreach"
 Description = "Tournament - Pokemon"
 Creator = "Felreach"
-Version = "1.0.1"
+Version = "1.0.2"
 
 #---------------------------------------
 #	Classes
@@ -50,7 +50,7 @@ class Match:
 		self.trainerTop = None
 		self.trainerBot = None
 		self.winner = None
-		self.looser = None
+		self.loser = None
 		self.remainingProgression = 1
 		self.hasProgressed = False
 		self.depth = depth
@@ -201,7 +201,7 @@ def GetStrengthValue(ours, against):
 	return evenStrength
 
 def Battle(first, second):
-	result = {"winner" : None, "looser" : None}
+	result = {"winner" : None, "loser" : None}
 	if(first in TYPES):
 		if(second in TYPES):
 			strength1 = GetStrengthValue(first, second)
@@ -218,9 +218,9 @@ def Battle(first, second):
 			result["winner"] = "second"
 
 	if result["winner"] == "first":
-		result["looser"] == "second"
+		result["loser"] == "second"
 	elif result["winner"] == "second":
-		result["looser"] == "first"
+		result["loser"] == "first"
 
 	return result
 
@@ -231,18 +231,18 @@ def ResolveBattle(battleToResolve):
 	# quick resolve because theres isnt an opponent
 	if battleToResolve.trainerTop != None and battleToResolve.trainerBot == None:
 		battleToResolve.winner = battleToResolve.trainerTop
-		battleToResolve.looser = None
+		battleToResolve.loser = None
 		return battleToResolve
 	
 	# quick resolve because theres isnt an opponent
 	if battleToResolve.trainerTop == None and battleToResolve.trainerBot != None:
 		battleToResolve.winner = battleToResolve.trainerBot
-		battleToResolve.looser = None
+		battleToResolve.loser = None
 		return battleToResolve
 
 	if battleToResolve.trainerTop == None and battleToResolve.trainerBot == None:
 		battleToResolve.winner = None
-		battleToResolve.looser = None
+		battleToResolve.loser = None
 		return battleToResolve
 
 	if battleToResolve.remainingProgression > 0:
@@ -256,10 +256,10 @@ def ResolveBattle(battleToResolve):
 	
 	if result["winner"] == "first":
 		battleToResolve.winner = battleToResolve.trainerTop
-		battleToResolve.looser = battleToResolve.trainerBot
+		battleToResolve.loser = battleToResolve.trainerBot
 	else:
 		battleToResolve.winner = battleToResolve.trainerBot
-		battleToResolve.looser = battleToResolve.trainerTop
+		battleToResolve.loser = battleToResolve.trainerTop
 
 	allTrainers[battleToResolve.winner].currentWinnings += settings["PrizePerBattle"]
 
@@ -370,7 +370,7 @@ def advanceTournament():
 	global allMatches, currentProgressionDepth
 	
 	Debug("advancing tournament")
-	result = {"IsFinalBattle" : False, "Battles" : [], "AdvancementStyle" : settings["AdvancementStyle"], "Winners": [], "Loosers" : []}
+	result = {"IsFinalBattle" : False, "Battles" : [], "AdvancementStyle" : settings["AdvancementStyle"], "Winners": [], "losers" : []}
 	
 	result["AdvancementStyle"] = settings["AdvancementStyle"]
 
@@ -403,7 +403,7 @@ def advanceTournament():
 			# no need to update parent here, this is last battle
 
 		result["Winners"].append(allMatches[0].winner)
-		result["Loosers"].append(allMatches[0].looser)
+		result["losers"].append(allMatches[0].loser)
 		result["Battles"].append(allMatches[0])
 
 		return result
@@ -421,7 +421,7 @@ def advanceTournament():
 				
 				# pass winners into the next battles
 				result["Winners"].append(allMatches[i].winner)
-				result["Loosers"].append(allMatches[i].looser)
+				result["losers"].append(allMatches[i].loser)
 				result["Battles"].append(allMatches[i])
 				pass 
 			i -= 1
@@ -452,7 +452,7 @@ def advanceTournament():
 			i -= 1
 
 		result["Winners"].append(allMatches[i].winner)
-		result["Loosers"].append(allMatches[i].looser)
+		result["losers"].append(allMatches[i].loser)
 		result["Battles"].append(allMatches[i])
 
 	# update currentProgressionDepth
@@ -927,6 +927,7 @@ def Execute(data):
 					tempResponseString = tempResponseString.replace("]","")
 					tempResponseString = tempResponseString.replace("\'","")
 					tempResponseString = "You can enter the tournament with either of these pokemon types: " + tempResponseString
+					tempResponseString += " or use random."
 					if settings["UtilityCooldown"] > 0:
 						Parent.AddCooldown(ScriptName, "TypesUtilityCooldown", settings["UtilityCooldown"])
 
@@ -1118,7 +1119,7 @@ def Tick():
 					s2 = "@$trainer1 and @$trainer2 are about to duke it out for the Badge!"
 					s = RandomInstance.choice([s0, s1])
 				elif battle.remainingProgression == 0 and settings["FinalsStyle"] == "Short":
-					s = "In the finals, @$winner wins against @$looser."
+					s = "In the finals, @$winner wins against @$loser."
 				elif battle.remainingProgression >= 1:
 					Debug("Tick: final battle progressing")
 					s0 = "The battle is fierce! The finalists are using all of the tricks they learned on their journey of becoming the best pokemon trainer."
@@ -1130,8 +1131,8 @@ def Tick():
 					s = RandomInstance.choice([s0, s1, s2, s3, s4, s5])
 				elif battle.remainingProgression == 0:
 					s0 = "Amazing! After a serious exchange @$winner manages to overpower their oponent and finish them off."
-					s1 = "Amazing! At the last second @$winner's Pokemon pulls off an amazing move against $looser and wins."
-					s2 = "At last, @$winner finds a crack in @$looser's defenses and deals them a finishing blow."
+					s1 = "Amazing! At the last second @$winner's Pokemon pulls off an amazing move against $loser and wins."
+					s2 = "At last, @$winner finds a crack in @$loser's defenses and deals them a finishing blow."
 					s = RandomInstance.choice([s0, s1, s2])
 
 				# replace tags
@@ -1140,8 +1141,8 @@ def Tick():
 				if battle.winner != None:
 					s = s.replace("$winner", allTrainers[battle.winner].name)
 					s = s.replace("$type", str(allTrainers[battle.winner].deckType).capitalize())
-				if battle.looser != None:
-					s = s.replace("$looser", allTrainers[battle.looser].name)
+				if battle.loser != None:
+					s = s.replace("$loser", allTrainers[battle.loser].name)
 
 				SendMsg(s)
 			else:
@@ -1155,12 +1156,12 @@ def Tick():
 						elif battle.remainingProgression >= 1:
 							s = "@$trainer1 and @$trainer2 are going at it."
 						elif battle.remainingProgression == 0:
-							s0 = "@$winner wins the battle against @$looser."
-							s1 = "In the end @$winner wins convincingly against @$looser."
-							s2 = "In a close match @$winner bests @$looser."
+							s0 = "@$winner wins the battle against @$loser."
+							s1 = "In the end @$winner wins convincingly against @$loser."
+							s2 = "In a close match @$winner bests @$loser."
 							s = RandomInstance.choice([s0, s1])
 							s = s.replace("$winner", allTrainers[battle.winner].name)
-							s = s.replace("$looser", allTrainers[battle.looser].name)
+							s = s.replace("$loser", allTrainers[battle.loser].name)
 
 						s = s.replace("$trainer1", allTrainers[battle.trainerTop].name)
 						s = s.replace("$trainer2", allTrainers[battle.trainerBot].name)
@@ -1204,25 +1205,25 @@ def Tick():
 							s = "No Trainers are progressing into the next round."
 
 						SendMsg(s)
-					if settings["ResultAnnoucementStyle"] == "Loosers" or settings["ResultAnnoucementStyle"] == "Both":
+					if settings["ResultAnnoucementStyle"] == "losers" or settings["ResultAnnoucementStyle"] == "Both":
 						if addedWinners:
 							s = ""
 						else:
 							s = "Another round of battles is finished. "
 
-						# get all the loosers
-						loosers = []
+						# get all the losers
+						losers = []
 						for i in range(len(result["Battles"])):
-							if result["Battles"][i].looser != None:
-								loosers.append(allTrainers[result["Battles"][i].looser].name)
+							if result["Battles"][i].loser != None:
+								losers.append(allTrainers[result["Battles"][i].loser].name)
 							pass
 
-						if len(loosers) > 0:
+						if len(losers) > 0:
 							s += "Trainers knocked out of the tournament are: "
 
-							for j in range(len(loosers)):
-								s += loosers[j]
-								if j != (len(loosers) - 1):
+							for j in range(len(losers)):
+								s += losers[j]
+								if j != (len(losers) - 1):
 									s += ", "
 
 						else:

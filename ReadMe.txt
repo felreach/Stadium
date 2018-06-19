@@ -4,7 +4,7 @@ Info
 Description: Pokemon tournament game
 Created by: 
 Felreach - www.twitch.tv/felreach
-Version: 1.0.1
+Version: 1.0.2
 
 
 Users enter the tournament by using !stadium [type] command where type is substituted with any of the following Pokemon types.
@@ -28,11 +28,15 @@ Manager Commands:
 ###############
 Version History
 ###############
+1.0.2:
+ - Fixed failure of my English
+ - Listing types now mentions the random option
 1.0.1:
  - Added periodic messages about tournament sign up and relevant settings for this feature
  - Script now announces itself when loaded
  - Changed payout message when payout is disabled
  - Maybe some other minor cosmetic changes
+ - Allowed trainers to enter with random type
 1.0.0:
  - First Release version for testing
 

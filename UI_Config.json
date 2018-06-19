@@ -182,10 +182,10 @@
   },
   "ResultAnnoucementStyle": {
     "type": "dropdown",
-    "value": "Loosers",
-    "items": [ "Winners", "Loosers", "Both" ],
+    "value": "Losers",
+    "items": [ "Winners", "Losers", "Both" ],
     "label": "Result Annoucement Style",
-    "tooltip": "Changes how the battle results are announced (excludes final battles. \r\nWinners: only winners are announced in chat. \r\nLoosers: only loosers are announced.\r\nBoth: both loosers and winners are announced.",
+    "tooltip": "Changes how the battle results are announced (excludes final battles. \r\nWinners: only winners are announced in chat. \r\nLosers: only losers are announced.\r\nBoth: both losers and winners are announced.",
     "group": "Responses"
   },
   "PrefaceMessages": {
