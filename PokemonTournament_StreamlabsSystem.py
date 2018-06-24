@@ -16,12 +16,12 @@ from datetime import timedelta
 #---------------------------------------
 #	[Required]	Script Information
 #---------------------------------------
-debuggingMode = True
+debuggingMode = False
 ScriptName = "Tournament - Pokemon"
 Website = "https://twitter.com/Felreach"
 Description = "Tournament - Pokemon"
 Creator = "Felreach"
-Version = "1.0.2"
+Version = "1.0.3"
 
 #---------------------------------------
 #	Classes
@@ -91,7 +91,7 @@ lastAnnouncementTime = datetime.now()
 cmdParamListTypes = {"types", "listtypes"}
 cmdParamReadyTourny = {"prepare", "readyup"}
 cmdParamStartTourny = {"start"}
-
+cmdParamLockTourny = {"lock"}
 
 #battle defs
 TYPES = ["normal", "fighting", "flying", "poison", "ground", "rock", "bug", "ghost", "steel", "fire", "water", "grass", "electric", "psychic", "ice", "dragon", "dark", "fairy"]
@@ -661,9 +661,11 @@ def getTournamentStatus():
 	result += "Ready: " + str(tournamentReady) + " ; "
 	result += "Opened: " + str(tournamentOpened) + " ; "
 	result += "Started: " + str(tournamentStarted) + " ; "
-	result += "Tournament depth current/total:" + str(currentProgressionDepth) + "/" + str(tournamentDepth) + " ; "
+	result += "Tournament depth current/total: " + str(currentProgressionDepth) + "/" + str(tournamentDepth) + " ; "
 	result += "Matches count: " + str(len(allMatches)) + " ; "
+	result += "FinalsStyle: " + settings["FinalsStyle"] + " ; "
 	result += "BattleStyle: " + settings["BattleStyle"] + " ; "
+	result += "AdvancementStyle: " + settings["AdvancementStyle"] + " ; "
 	result += "ActiveThread: " + activeThread + " ; "
 
 	return result
@@ -780,7 +782,7 @@ def Init():
 #---------------------------------------
 def Execute(data):
 	global user
-	global tournamentOpened, tournamentReady, tournamentStarted
+	global tournamentOpened, tournamentReady, tournamentStarted, stadiumLocked
 	global enteredTrainers, allTrainers
 	global RandomInstance
 
@@ -804,9 +806,22 @@ def Execute(data):
 			if FelOverride:
 				hasPermission = True
 				hasManagePermission = True
-
+			#EMPTY COMMAND
+			if (data.GetParam(1) == "" and hasPermission):
+				if stadiumLocked:
+					tempResponseString = "Stadium has been unlocked and is ready for next tournament! Sign up with " + settings["Command"] + " <pokemon type>"
+				else:
+					if currentTick == "Cooldown":
+						tempResponseString = "Stadium is being prepared for the next turnament. When its ready sign up with " + settings["Command"] + " <pokemon type>"
+					else:
+						if tournamentStarted:
+							tempResponseString = "Tournament is already already under way @$user! Sign up with " + settings["Command"] + " <pokemon type>"
+						elif tournamentOpened:
+							tempResponseString = "To sign up into the tournament use " + settings["Command"] + " <pokemon type>"
+						elif tournamentReady:
+							tempResponseString = "To sign up into the tournament use " + settings["Command"] + " <pokemon type>"
 			# OPEN STADIUM
-			if(data.GetParam(1).lower() in cmdParamReadyTourny and hasManagePermission):
+			elif(data.GetParam(1).lower() in cmdParamReadyTourny and hasManagePermission):
 				if stadiumLocked:
 					resetTournament(True)
 					tempResponseString = "Stadium has been unlocked and is ready for next tournament! Sign up with " + settings["Command"] + " <pokemon type>"
@@ -821,6 +836,18 @@ def Execute(data):
 							tempResponseString = "Tournament is already opened!"
 						elif tournamentReady:
 							tempResponseString = "Tournament is ready! No need for cleaning or additional preparations."
+			# LOCK STADIUM
+			elif(data.GetParam(1).lower() in cmdParamLockTourny and hasManagePermission):
+				if stadiumLocked:
+					tempResponseString = "Stadium is already locked."
+				else:
+					if tournamentStarted:
+						tempResponseString = "Stadium cannot be locked right now."
+					elif tournamentOpened:
+						tempResponseString = "Stadium cannot be locked right now."
+					elif tournamentReady:
+						tempResponseString = "Locking the Stadium now."
+						stadiumLocked = True
 			# START 
 			elif(data.GetParam(1).lower() in cmdParamStartTourny and hasManagePermission):
 				if not stadiumLocked:
