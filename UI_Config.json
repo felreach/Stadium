@@ -76,7 +76,7 @@
   "EnablePeriodicAnnouncement": {
     "type": "checkbox",
     "value": true,
-    "label": "Use Tournament Entry Cost Messages",
+    "label": "Periodic Announcement",
     "tooltip": "Enable/Disable periodic message that the tournament is ready",
     "group": "Messages"
   },
@@ -186,14 +186,14 @@
     "items": [ "Winners", "Losers", "Both" ],
     "label": "Result Annoucement Style",
     "tooltip": "Changes how the battle results are announced (excludes final battles. \r\nWinners: only winners are announced in chat. \r\nLosers: only losers are announced.\r\nBoth: both losers and winners are announced.",
-    "group": "Responses"
+    "group": "Messages"
   },
   "PrefaceMessages": {
     "type": "checkbox",
     "value": false,
     "label": "Preface messages?",
     "tooltip": "Enable/disable prefacing response messages with [Stadium:]",
-    "group": "Responses"
+    "group": "Messages"
   },
 
   "StadiumStartsLocked": {
@@ -212,7 +212,7 @@
   },
   "AdvancementStyle": {
     "type": "dropdown",
-    "value": "PerRound",
+    "value": "PerBattle",
     "items": [ "PerRound", "PerBattle" ],
     "label": "Advacement Style",
     "tooltip": "Changes how the tournament progresses. \r\nPerRound: all battles of the current round are resolved at once (less responses in the chat). \r\nPerBattle: battles are slowly resolved one by one (more responses in the chat).",

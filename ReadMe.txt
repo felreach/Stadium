@@ -4,7 +4,7 @@ Info
 Description: Pokemon tournament game
 Created by: 
 Felreach - www.twitch.tv/felreach
-Version: 1.0.3
+Version: 1.0.4
 
 /////////////////
 Installation
@@ -51,6 +51,8 @@ Notes
 /////////////////
 Version History
 /////////////////
+1.0.4:
+ - minor fixes
 1.0.3:
  - !stadium has a response now
  - added command !stadium lock 
