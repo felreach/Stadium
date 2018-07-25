@@ -21,7 +21,7 @@ ScriptName = "Tournament - Pokemon"
 Website = "https://twitter.com/Felreach"
 Description = "Tournament - Pokemon"
 Creator = "Felreach"
-Version = "1.0.4"
+Version = "1.0.5"
 
 #---------------------------------------
 #	Classes
@@ -92,6 +92,7 @@ cmdParamListTypes = {"types", "listtypes"}
 cmdParamReadyTourny = {"prepare", "readyup"}
 cmdParamStartTourny = {"start"}
 cmdParamLockTourny = {"lock"}
+cmdParamListTrainers = {"trainers", "users"}
 
 #battle defs
 TYPES = ["normal", "fighting", "flying", "poison", "ground", "rock", "bug", "ghost", "steel", "fire", "water", "grass", "electric", "psychic", "ice", "dragon", "dark", "fairy"]
@@ -732,6 +733,7 @@ def Init():
 			"AllowRegularsToManage" : False,
 			"EntryCost": 0,
 			"UseCommonResponses" : True,
+			"ShowTrainerType" : True,
 			"EnableInvalidTypeResponse" : True,
 			"EnableEntryResponse" : True,
 			"EnableEntryCostResponse" : True,
@@ -851,11 +853,14 @@ def Execute(data):
 			# START 
 			elif(data.GetParam(1).lower() in cmdParamStartTourny and hasManagePermission):
 				if not stadiumLocked:
-					if len(enteredTrainers) > 0 and not tournamentStarted:
-						tempResponseString = "Starting the tournament!"
-						startTournament();
+					if not cooldownTimerThreadActive:
+						if len(enteredTrainers) > 0 and not tournamentStarted:
+							tempResponseString = "Starting the tournament!"
+							startTournament();
+						else:
+							tempResponseString = "Cannot start the tournament now."
 					else:
-						tempResponseString = "There are no participants ready for the tournament!"
+						tempResponseString = "Tournament is on cooldown."
 				else:
 					tempResponseString = "Stadium is currently locked."
 			# STATUS
@@ -868,7 +873,7 @@ def Execute(data):
 				tempResponseString = getBattleStatus()
 
 			# RESET
-			elif data.GetParam(1).lower() == "reset" and FelOverride:
+			elif data.GetParam(1).lower() == "reset" and hasManagePermission:
 				resetTournament()
 				tempResponseString = "@$user is hard resetting the tournament!"
 
@@ -880,6 +885,7 @@ def Execute(data):
 					# list the commands
 					s = "Available Commands: "
 					s += "types OR listtypes, "
+					s += "trainers, "
 					s += "commands, info"
 					s += "; Manager Commands: "
 					s += "start, "
@@ -957,6 +963,25 @@ def Execute(data):
 					tempResponseString += " or use random."
 					if settings["UtilityCooldown"] > 0:
 						Parent.AddCooldown(ScriptName, "TypesUtilityCooldown", settings["UtilityCooldown"])
+
+			# LIST TRAINERS
+			elif(data.GetParam(1).lower() in cmdParamListTrainers and hasPermission):
+				if settings["UtilityCooldown"] > 0 and Parent.IsOnCooldown(ScriptName, "TrainersUtilityCooldown"):
+					pass
+				else:
+					if len(enteredTrainers) > 0:
+						tempResponseString = "Trainers which entered: "
+						i = 0
+						for x in enteredTrainers:
+							tempResponseString += "@" + x
+							if i < len(enteredTrainers) - 1:
+								tempResponseString += ", "
+							i += 1
+					else:
+						tempResponseString = "No trainers entered the tournament yet."
+
+					if settings["UtilityCooldown"] > 0:
+						Parent.AddCooldown(ScriptName, "TrainersUtilityCooldown", settings["UtilityCooldown"])
 
 			# JOIN TOURNY AS A USER
 			elif data.GetParamCount() == 2 and hasPermission: #we have exactly two params, that means the second one should be a type
@@ -1141,9 +1166,9 @@ def Tick():
 				battle = result["Battles"][0]
 				Debug("Final battle has progressed: " + str(battle.hasProgressed ) + " " + str(battle.remainingProgression))
 				if battle.remainingProgression > 0 and result["BattleHasProgressed"] == False:
-					s0 = "The final battle is here! @$trainer1 and @$trainer2 will fight for the Badge."
-					s1 = "@$trainer1 and @$trainer2 are about to meet in the finals!"
-					s2 = "@$trainer1 and @$trainer2 are about to duke it out for the Badge!"
+					s0 = "The final battle is here! @$trainer1$type1 and @$trainer2$type2 will fight for the Badge."
+					s1 = "@$trainer1$type1 and @$trainer2$type2 are about to meet in the finals!"
+					s2 = "@$trainer1$type1 and @$trainer2$type2 are about to duke it out for the Badge!"
 					s = RandomInstance.choice([s0, s1, s2])
 				elif battle.remainingProgression == 0 and settings["FinalsStyle"] == "Short":
 					s = "In the finals, @$winner wins against @$loser."
@@ -1165,6 +1190,13 @@ def Tick():
 				# replace tags
 				s = s.replace("$trainer1", allTrainers[battle.trainerTop].name)
 				s = s.replace("$trainer2", allTrainers[battle.trainerBot].name)
+				if settings["ShowTrainerType"]:
+					s = s.replace("$type1", " (" + allTrainers[battle.trainerTop].deckType + ")")
+					s = s.replace("$type2", " (" + allTrainers[battle.trainerBot].deckType + ")")
+				else:
+					s = s.replace("$type1", "")
+					s = s.replace("$type2", "")
+
 				if battle.winner != None:
 					s = s.replace("$winner", allTrainers[battle.winner].name)
 					s = s.replace("$type", str(allTrainers[battle.winner].deckType).capitalize())
@@ -1179,19 +1211,35 @@ def Tick():
 					battle = result["Battles"][0]
 					if battle.trainerTop != None and battle.trainerBot != None:
 						if battle.remainingProgression > 0 and result["BattleHasProgressed"] == False:
-							s = "The match between @$trainer1 and @$trainer2 is underway"
+							s = "The match between @$trainer1$type1 and @$trainer2$type2 is underway"
 						elif battle.remainingProgression >= 1:
 							s = "@$trainer1 and @$trainer2 are going at it."
 						elif battle.remainingProgression == 0:
-							s0 = "@$winner wins the battle against @$loser."
-							s1 = "@$winner wins convincingly against @$loser."
-							s2 = "In a close match @$winner bests @$loser."
-							s = RandomInstance.choice([s0, s1])
+							s0 = "@$winner$typeWinner wins the battle against @$loser$typeLoser."
+							s1 = "@$winner$typeWinner wins convincingly against @$loser$typeLoser."
+							s2 = "In a close match @$winner$type1 bests @$loser$type2."
+							s = RandomInstance.choice([s0, s1, s2])
 							s = s.replace("$winner", allTrainers[battle.winner].name)
 							s = s.replace("$loser", allTrainers[battle.loser].name)
+							
+							if settings["ShowTrainerType"]:
+								s = s.replace("$typeWinner", " (" + allTrainers[battle.winner].deckType + ")")
+								s = s.replace("$typeLoser", " (" + allTrainers[battle.loser].deckType + ")")
+							else:
+								s = s.replace("$typeWinner", "")
+								s = s.replace("$typeLoser", "")
+
 
 						s = s.replace("$trainer1", allTrainers[battle.trainerTop].name)
 						s = s.replace("$trainer2", allTrainers[battle.trainerBot].name)
+						
+						if settings["ShowTrainerType"]:
+							s = s.replace("$type1", " (" + allTrainers[battle.trainerTop].deckType + ")")
+							s = s.replace("$type2", " (" + allTrainers[battle.trainerBot].deckType + ")")
+						else:
+							s = s.replace("$type1", "")
+							s = s.replace("$type2", "")
+
 
 						SendMsg(s)
 					else:
@@ -1283,6 +1331,7 @@ def Tick():
 				s = s.replace("$type", str(allTrainers[battle.winner].deckType).capitalize())
 				s = s.replace("$amount", str(winnings))
 				s = s.replace("$currency", settings["CurrencyName"])
+
 				SendMsg(s)
 				
 				if settings["EnablePayout"] == True:
@@ -1293,7 +1342,7 @@ def Tick():
 						s = s.replace("$amount", str(winnings))
 						Parent.SendTwitchMessage(s)
 					else: # pay out with internal currency
-						Parent.AddPoints(user, winnings)
+						Parent.AddPoints(allTrainers[battle.winner].name, winnings)
 
 			SendMsg("The Stadium closes...")
 			finishTournament();

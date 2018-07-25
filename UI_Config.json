@@ -52,6 +52,13 @@
     "tooltip": "Enable/Disable all the common response messages for the trainers",
     "group": "Messages"
   },
+  "ShowTrainerType": {
+    "type": "checkbox",
+    "value": true,
+    "label": "Show Trainer's Type",
+    "tooltip": "Enable/Disable displaying pokemon type which the trainer is using for the battle.",
+    "group": "Messages"
+  },
   "EnableInvalidTypeResponse": {
     "type": "checkbox",
     "value": true,

@@ -4,7 +4,7 @@ Info
 Description: Pokemon tournament game
 Created by: 
 Felreach - www.twitch.tv/felreach
-Version: 1.0.4
+Version: 1.0.5
 
 /////////////////
 Installation
@@ -20,6 +20,8 @@ Installation
 4. I recommend going through the settings and saving them.
 5. Make sure the script is enabled. (little checkbox next to it in the listed scripts)
 6. The script should announce itself into the twitch chat when its loaded.
+
+note: if you're upgrading from an earlier version check all of the settings that they are set correctly and save them (even if you didn't change any setting)
 
 /////////////////
 Description
@@ -51,6 +53,12 @@ Notes
 /////////////////
 Version History
 /////////////////
+1.0.5:
+ - added !stadium trainers command
+ - allowed streamer/moderators to use !stadium reset so they have more control over the tournament
+ - disabled !stadium start when the tournament is cooling down
+ - added option for displaying the type trainers are using when battling
+ - fixed payout using internal currency (NotLikeThis)
 1.0.4:
  - minor fixes
 1.0.3:
