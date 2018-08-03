@@ -4,7 +4,7 @@ Info
 Description: Pokemon tournament game
 Created by: 
 Felreach - www.twitch.tv/felreach
-Version: 1.0.5
+Version: 1.0.6
 
 /////////////////
 Installation
@@ -53,6 +53,8 @@ Notes
 /////////////////
 Version History
 /////////////////
+1.0.6:
+ - fixed incorrect response string where it would switch pokemon types of trainers
 1.0.5:
  - added !stadium trainers command
  - allowed streamer/moderators to use !stadium reset so they have more control over the tournament

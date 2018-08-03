@@ -21,7 +21,7 @@ ScriptName = "Tournament - Pokemon"
 Website = "https://twitter.com/Felreach"
 Description = "Tournament - Pokemon"
 Creator = "Felreach"
-Version = "1.0.5"
+Version = "1.0.6"
 
 #---------------------------------------
 #	Classes
@@ -1217,7 +1217,7 @@ def Tick():
 						elif battle.remainingProgression == 0:
 							s0 = "@$winner$typeWinner wins the battle against @$loser$typeLoser."
 							s1 = "@$winner$typeWinner wins convincingly against @$loser$typeLoser."
-							s2 = "In a close match @$winner$type1 bests @$loser$type2."
+							s2 = "In a close match @$winner$typeWinner bests @$loser$typeLoser."
 							s = RandomInstance.choice([s0, s1, s2])
 							s = s.replace("$winner", allTrainers[battle.winner].name)
 							s = s.replace("$loser", allTrainers[battle.loser].name)
